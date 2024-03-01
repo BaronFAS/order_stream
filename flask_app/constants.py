@@ -13,5 +13,5 @@
     "Tax",
     "Gross",
     "Payment",
-    "IsRefund"
+    "IsRefund",
 ]

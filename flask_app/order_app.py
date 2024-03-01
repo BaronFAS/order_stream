@@ -2,7 +2,6 @@
 
 from flask import jsonify, request
 import pandas as pd
-
 from flask_app import app, db
 from flask_app.models import Order, TransactionModel
 from flask_app.constants import REQUIRED_FIELDS_TRANSACTION
@@ -38,9 +37,11 @@ def data_processing(dict_order_data):
             "Gross": dict_order_data["Gross"],
             "Payment": dict_order_data["Payment"],
             "IsRefund": dict_order_data["IsRefund"],
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f %Z")
+            # "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f %Z"),
+            "created_at": datetime.now(),
         }
         transaction = TransactionModel(**data)
+        # print(transaction)
         return transaction
     except Exception as e:
         print(f"Ошибка при обработке данных: {e}")
@@ -53,16 +54,19 @@ def record_logs(order_data):
 
 
 def save_to_google(transaction):
-    my_gbq = GBQ(secret_path='posbistro-x-klasna-0596bf139c12.json')
-    my_gbq.set_project('posbistro-x-klasna')
-    df = pd.DataFrame([transaction])
-    dataset_name = 'Manufaktura'
-    table_name = 'invoices'
+    my_gbq = GBQ(secret_path="posbistro-x-klasna-0596bf139c12.json")
+    my_gbq.set_project("posbistro-x-klasna")
+    # print(pd.DataFrame([transaction]))
+    df = pd.DataFrame([transaction], columns=transaction.keys())
+    print(df.info())
+    # print(df.info())
+    dataset_name = "Manufaktura"
+    table_name = "invoices"
     result = my_gbq.write_df_to_bgq(df, dataset_name, table_name)
     print(result)
 
 
-@app.route('/api/order_stream', methods=['POST'])
+@app.route("/api/order_stream", methods=["POST"])
 def add_data():
     data = request.get_json()
     order_data = json.dumps(data)
@@ -72,11 +76,11 @@ def add_data():
     if validation_errors:
         for error in validation_errors:
             print(f"Нет поля {error}")
-            return jsonify({'message': 'Error at data json'}), 400
+            return jsonify({"message": "Error at data json"}), 400
     else:
         transaction = data_processing(dict_order_data)
         if transaction:
-            print(transaction.dict())
-            save_to_google(transaction)
-            return jsonify({'message': 'Data added successfully'}), 201
-        return jsonify({'message': 'Error at data field'}), 400
+            print(type(transaction.dict()))
+            save_to_google(transaction.dict())
+            return jsonify({"message": "Data added successfully"}), 201
+        return jsonify({"message": "Error at data field"}), 400

@@ -25,7 +25,7 @@ class TransactionModel(BaseModel):
     Gross: float
     Payment: float
     IsRefund: bool
-    created_at: str
+    created_at: dt
 
 
 # class Transaction(db.Model):
