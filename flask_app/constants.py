@@ -1,9 +1,4 @@
-﻿from typing import TypedDict, NewType
-
-Timestamp = NewType("Timestamp", int)
-
-
-REQUIRED_FIELDS_TRANSACTION = [
+﻿REQUIRED_FIELDS_TRANSACTION = [
     "ID",
     "StartedOn",
     "FinishedOn",
@@ -20,22 +15,3 @@ REQUIRED_FIELDS_TRANSACTION = [
     "Payment",
     "IsRefund"
 ]
-
-
-class Transaction(TypedDict):
-    ID: str
-    StartedOn: str
-    FinishedOn: str
-    State: str
-    LocationName: str
-    LocationNo: str
-    TransactionNo: str
-    TerminalNo: str
-    EmployeeNo: str
-    EmployeName: str
-    Net: float
-    Tax: float
-    Gross: float
-    Payment: float
-    IsRefund: bool
-    created_at: Timestamp

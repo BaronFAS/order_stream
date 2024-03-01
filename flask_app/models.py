@@ -1,11 +1,31 @@
 ﻿from flask_app import db
 from datetime import datetime as dt
+from pydantic import BaseModel
 
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.String)
     timestamp = db.Column(db.DateTime, index=True, default=dt.utcnow)
+
+
+class TransactionModel(BaseModel):
+    ID: str
+    StartedOn: str
+    FinishedOn: str
+    State: str
+    LocationName: str
+    LocationNo: str
+    TransactionNo: str
+    TerminalNo: str
+    EmployeeNo: str
+    EmployeName: str
+    Net: float
+    Tax: float
+    Gross: float
+    Payment: float
+    IsRefund: bool
+    created_at: str
 
 
 # class Transaction(db.Model):

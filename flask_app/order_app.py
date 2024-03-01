@@ -3,11 +3,12 @@
 from flask import jsonify, request
 
 from flask_app import app, db
-from flask_app.models import Order
-from flask_app.constants import Transaction, REQUIRED_FIELDS_TRANSACTION
+from flask_app.models import Order, TransactionModel
+from flask_app.constants import REQUIRED_FIELDS_TRANSACTION
 
-from pprint import pprint
-from datetime import datetime as dt
+# from pprint import pprint
+from datetime import datetime
+# from pydantic import ValidationError
 
 
 def validate_field(data):
@@ -18,26 +19,30 @@ def validate_field(data):
     return errors
 
 
-def data_processing(data):
-    transaction = Transaction(
-        ID=data["ID"],
-        StartedOn=data["StartedOn"],
-        FinishedOn=data["FinishedOn"],
-        State=data["State"],
-        LocationName=data["LocationName"],
-        LocationNo=data["LocationNo"],
-        TransactionNo=data["TransactionNo"],
-        TerminalNo=data["TerminalNo"],
-        EmployeeNo=data["EmployeeNo"],
-        EmployeName=data["EmployeName"],
-        Net=float(data["Net"]),
-        Tax=float(data["Tax"]),
-        Gross=float(data["Gross"]),
-        Payment=float(data["Payment"]),
-        IsRefund=bool(data["IsRefund"]),
-        created_at=dt.now()
-    )
-    return transaction
+def data_processing(dict_order_data):
+    try:
+        data = {
+            "ID": dict_order_data["ID"],
+            "StartedOn": dict_order_data["StartedOn"],
+            "FinishedOn": dict_order_data["FinishedOn"],
+            "State": dict_order_data["State"],
+            "LocationName": dict_order_data["LocationName"],
+            "LocationNo": dict_order_data["LocationNo"],
+            "TransactionNo": dict_order_data["TransactionNo"],
+            "TerminalNo": dict_order_data["TerminalNo"],
+            "EmployeeNo": dict_order_data["EmployeeNo"],
+            "EmployeName": dict_order_data["EmployeName"],
+            "Net": dict_order_data["Net"],
+            "Tax": dict_order_data["Tax"],
+            "Gross": dict_order_data["Gross"],
+            "Payment": dict_order_data["Payment"],
+            "IsRefund": dict_order_data["IsRefund"],
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f %Z")
+        }
+        transaction = TransactionModel(**data)
+        return transaction
+    except Exception as e:
+        print(f"Ошибка при обработке данных: {e}")
 
 
 def record_logs(order_data):
@@ -50,14 +55,16 @@ def record_logs(order_data):
 def add_data():
     data = request.get_json()
     order_data = json.dumps(data)
+    record_logs(order_data)
     dict_order_data = eval(order_data)
     validation_errors = validate_field(dict_order_data)
     if validation_errors:
         for error in validation_errors:
-            print(error)
-            record_logs(order_data)
-            return jsonify({'message': 'Error data not added'}), 400
+            print(f"Нет поля {error}")
+            return jsonify({'message': 'Error at data json'}), 400
     else:
         transaction = data_processing(dict_order_data)
-        record_logs(order_data)
-        return jsonify({'message': 'Data added successfully'}), 201
+        if transaction:
+            print(transaction.dict())
+            return jsonify({'message': 'Data added successfully'}), 201
+        return jsonify({'message': 'Error at data field'}), 400
