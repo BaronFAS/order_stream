@@ -1,14 +1,15 @@
 ﻿import json
 
 from flask import jsonify, request
+import pandas as pd
 
 from flask_app import app, db
 from flask_app.models import Order, TransactionModel
 from flask_app.constants import REQUIRED_FIELDS_TRANSACTION
+from flask_app.gbq import GBQ
 
 # from pprint import pprint
 from datetime import datetime
-# from pydantic import ValidationError
 
 
 def validate_field(data):
@@ -51,6 +52,16 @@ def record_logs(order_data):
     db.session.commit()
 
 
+def save_to_google(transaction):
+    my_gbq = GBQ(secret_path='posbistro-x-klasna-0596bf139c12.json')
+    my_gbq.set_project('posbistro-x-klasna')
+    df = pd.DataFrame([transaction])
+    dataset_name = 'Manufaktura'
+    table_name = 'invoices'
+    result = my_gbq.write_df_to_bgq(df, dataset_name, table_name)
+    print(result)
+
+
 @app.route('/api/order_stream', methods=['POST'])
 def add_data():
     data = request.get_json()
@@ -66,5 +77,6 @@ def add_data():
         transaction = data_processing(dict_order_data)
         if transaction:
             print(transaction.dict())
+            save_to_google(transaction)
             return jsonify({'message': 'Data added successfully'}), 201
         return jsonify({'message': 'Error at data field'}), 400
