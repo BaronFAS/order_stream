@@ -1,5 +1,5 @@
 ﻿import json
-
+from tqdm import tqdm
 # from pprint import pprint
 
 import pandas as pd
@@ -12,6 +12,7 @@ from flask_app.data_processing import (
     data_processing_products,
     data_processing_transaction,
     data_processing_discounts,
+    data_processing_payments,
 )
 from flask_app.validators import validate_field
 from flask_app.constants import (
@@ -27,6 +28,7 @@ from flask_app.constants import (
     MESSAGE,
     DATA_ADD_SUCCES,
     DF_ERROR,
+    INVOICE_PAYMENTS,
 )
 
 
@@ -42,9 +44,7 @@ def save_to_google(data, table_name):
     my_gbq = GBQ(secret_path=SECRET_PATH)
     my_gbq.set_project(SET_PROJECT)
     df = pd.DataFrame([data], columns=data.keys())
-    dataset_name = DATASET_NAME
-    result = my_gbq.write_df_to_bgq(df, dataset_name, table_name)
-    return result
+    return my_gbq.write_df_to_bgq(df, DATASET_NAME, table_name)
 
 
 @app.route("/api/order_stream", methods=["POST"])
@@ -56,29 +56,35 @@ def add_data():
     dict_order_data = eval(order_data)
     validation_errors = validate_field(dict_order_data)
     if validation_errors:
-        for error in validation_errors:
+        for error in tqdm(validation_errors):
             print(VALIDATE_ERROR + error)
             return jsonify({MESSAGE: JSON_ERROR}), 400
     else:
         transaction = data_processing_transaction(dict_order_data)
         products = data_processing_products(dict_order_data)
         discounts = data_processing_discounts(dict_order_data)
+        payments = data_processing_payments(dict_order_data)
 
-        if transaction and products and discounts:
+        if transaction and products and discounts and payments:
 
             result = save_to_google(transaction.dict(), INVOICE)
             if result is False:
                 print(TB_ERROR + INVOICE)
 
-            for p in products:
+            for p in tqdm(products):
                 result = save_to_google(p.dict(), INVOICE_PRODUCTS)
                 if result is False:
                     print(TB_ERROR + INVOICE_PRODUCTS)
 
-            for d in discounts:
+            for d in tqdm(discounts):
                 result = save_to_google(d.dict(), INVOICE_DISCOUNTS)
                 if result is False:
                     print(TB_ERROR + INVOICE_DISCOUNTS)
+
+            for pay in tqdm(payments):
+                result = save_to_google(pay.dict(), INVOICE_PAYMENTS)
+                if result is False:
+                    print(TB_ERROR + INVOICE_PAYMENTS)
 
             return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
 

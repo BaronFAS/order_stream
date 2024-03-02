@@ -1,6 +1,18 @@
 ﻿from datetime import datetime
 
-from flask_app.models import TransactionModel, ProductsModel, DiscountsModel
+from flask_app.models import (
+    TransactionModel,
+    ProductsModel,
+    DiscountsModel,
+    PaymentsModel,
+)
+from flask_app.constants import (
+    DATA_PROCESSING_ERROR,
+    INVOICE,
+    INVOICE_PRODUCTS,
+    INVOICE_DISCOUNTS,
+    INVOICE_PAYMENTS,
+)
 
 
 def data_processing_transaction(dict_order_data):
@@ -28,7 +40,7 @@ def data_processing_transaction(dict_order_data):
         transaction = TransactionModel(**data_transaction)
         return transaction
     except Exception as e:
-        print(f"Ошибка при обработке данных: {e}")
+        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE)
 
 
 def data_processing_products(dict_order_data):
@@ -58,7 +70,7 @@ def data_processing_products(dict_order_data):
 
         return products
     except Exception as e:
-        print(f"Ошибка при обработке данных: {e}")
+        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_PRODUCTS)
 
 
 def data_processing_discounts(dict_order_data):
@@ -81,4 +93,26 @@ def data_processing_discounts(dict_order_data):
 
         return discounts
     except Exception as e:
-        print(f"Ошибка при обработке данных: {e}")
+        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_DISCOUNTS)
+
+
+def data_processing_payments(dict_order_data):
+    """Преобразует поля словаря в нужные типы данных,
+    создает объект pydantic."""
+    try:
+        payments = []
+        data_payments = dict_order_data["Payments"]
+        for data in data_payments:
+            data = {
+                "invoice_id": dict_order_data["ID"],
+                "AddedOn": data["AddedOn"],
+                "ID": data["ID"],
+                "Type": data["Type"],
+                "Amount": data["Amount"],
+                "created_at": datetime.now(),
+            }
+            payments.append(PaymentsModel(**data))
+
+        return payments
+    except Exception as e:
+        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_PAYMENTS)

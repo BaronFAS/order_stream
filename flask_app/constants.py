@@ -4,15 +4,14 @@ DATASET_NAME = "Manufaktura"
 MESSAGE = "message"
 VALIDATE_ERROR = "Нет поля "
 JSON_ERROR = "Error at data json"
-
 INVOICE = "invoice"
 INVOICE_PRODUCTS = "invoice_products"
 INVOICE_DISCOUNTS = "invoice_discounts"
+INVOICE_PAYMENTS = "invoice_payments"
 TB_ERROR = "Failed to save to table: "
-
 DATA_ADD_SUCCES = "Data added successfully"
 DF_ERROR = "Error at data field"
-
+DATA_PROCESSING_ERROR = "Ошибка при обработке данных: "
 
 REQUIRED_FIELDS_TRANSACTION = [
     "ID",
