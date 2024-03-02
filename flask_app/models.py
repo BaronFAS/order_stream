@@ -30,45 +30,21 @@ class TransactionModel(BaseModel):
     created_at: dt
 
 
-# class Transaction(db.Model):
-#     __tablename__ = 'transactions'
-
-#     id = db.Column(db.String, primary_key=True)
-#     started_on = db.Column(db.DateTime)
-#     finished_on = db.Column(db.DateTime)
-#     state = db.Column(db.String)
-#     location_name = db.Column(db.String)
-#     location_no = db.Column(db.String)
-#     transaction_no = db.Column(db.String)
-#     terminal_no = db.Column(db.String)
-#     employee_no = db.Column(db.String)
-#     employee_name = db.Column(db.String)
-#     net = db.Column(db.Float)
-#     tax = db.Column(db.Float)
-#     gross = db.Column(db.Float)
-#     payment = db.Column(db.Float)
-#     is_refund = db.Column(db.Boolean)
-#     items = db.relationship('Item', backref='transaction', lazy=True)
-#     discounts = db.relationship('Discount', backref='transaction', lazy=True)
-#     payments = db.relationship('Payment', backref='transaction', lazy=True)
-
-
-# class Item(db.Model):
-#     __tablename__ = 'items'
-
-#     id = db.Column(db.String, primary_key=True)
-#     added_on = db.Column(db.DateTime)
-#     sku = db.Column(db.String)
-#     plu = db.Column(db.String)
-#     ean = db.Column(db.String)
-#     name = db.Column(db.String)
-#     category = db.Column(db.String)
-#     unit_price = db.Column(db.Float)
-#     quantity = db.Column(db.Integer)
-#     tax_rate = db.Column(db.Float)
-#     tax = db.Column(db.Float)
-#     amount = db.Column(db.Float)
-#     transaction_id = db.Column(db.String, db.ForeignKey('transactions.id'), nullable=False)
+class ProductsModel(BaseModel):
+    invoice_id: str
+    AddedOn: str
+    ID: str
+    SKU: str
+    PLU: str
+    EAN: str
+    Name: str
+    Category: str
+    UnitPrice: float
+    Quantity: int
+    TaxRate: float
+    Tax: float
+    Amount: float
+    created_at: dt
 
 
 # class Discount(db.Model):

@@ -7,4 +7,12 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
-from flask_app import constants, gbq, models, order_app, settings  # noqa
+from flask_app import (
+    constants,
+    gbq,
+    models,
+    order_app,
+    settings,
+    data_processing,
+    validators,
+)  # noqa
