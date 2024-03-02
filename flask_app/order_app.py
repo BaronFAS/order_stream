@@ -11,6 +11,7 @@ from flask_app.models import Order
 from flask_app.data_processing import (
     data_processing_products,
     data_processing_transaction,
+    data_processing_discounts,
 )
 from flask_app.validators import validate_field
 from flask_app.constants import (
@@ -19,10 +20,10 @@ from flask_app.constants import (
     DATASET_NAME,
     VALIDATE_ERROR,
     JSON_ERROR,
-    TB_INVOICE,
-    TB_INVOICE_ERROR,
+    INVOICE,
+    INVOICE_DISCOUNTS,
     INVOICE_PRODUCTS,
-    INVOICE_PRODUCTS_ERROR,
+    TB_ERROR,
     MESSAGE,
     DATA_ADD_SUCCES,
     DF_ERROR,
@@ -61,16 +62,24 @@ def add_data():
     else:
         transaction = data_processing_transaction(dict_order_data)
         products = data_processing_products(dict_order_data)
+        discounts = data_processing_discounts(dict_order_data)
 
-        if transaction and products:
+        if transaction and products and discounts:
 
-            result = save_to_google(transaction.dict(), TB_INVOICE)
+            result = save_to_google(transaction.dict(), INVOICE)
             if result is False:
-                print(TB_INVOICE_ERROR)
+                print(TB_ERROR + INVOICE)
 
             for p in products:
                 result = save_to_google(p.dict(), INVOICE_PRODUCTS)
                 if result is False:
-                    print(INVOICE_PRODUCTS_ERROR)
+                    print(TB_ERROR + INVOICE_PRODUCTS)
+
+            for d in discounts:
+                result = save_to_google(d.dict(), INVOICE_DISCOUNTS)
+                if result is False:
+                    print(TB_ERROR + INVOICE_DISCOUNTS)
+
             return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
+
         return jsonify({MESSAGE: DF_ERROR}), 400

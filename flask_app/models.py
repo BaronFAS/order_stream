@@ -47,6 +47,16 @@ class ProductsModel(BaseModel):
     created_at: dt
 
 
+class DiscountsModel(BaseModel):
+    invoice_id: str
+    AddedOn: str
+    ID: str
+    ItemID: str
+    Name: str
+    Amount: float
+    created_at: dt
+
+
 # class Discount(db.Model):
 #     __tablename__ = 'discounts'
 

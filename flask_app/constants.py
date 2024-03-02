@@ -4,12 +4,12 @@ DATASET_NAME = "Manufaktura"
 MESSAGE = "message"
 VALIDATE_ERROR = "Нет поля "
 JSON_ERROR = "Error at data json"
-TB_INVOICE = "invoice"
-TB_INVOICE_ERROR = f"It was not possible to save data to the {TB_INVOICE} table"  # noqa
+
+INVOICE = "invoice"
 INVOICE_PRODUCTS = "invoice_products"
-INVOICE_PRODUCTS_ERROR = (
-    f"It was not possible to save data to the {INVOICE_PRODUCTS} table"  # noqa
-)
+INVOICE_DISCOUNTS = "invoice_discounts"
+TB_ERROR = "Failed to save to table: "
+
 DATA_ADD_SUCCES = "Data added successfully"
 DF_ERROR = "Error at data field"
 
