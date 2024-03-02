@@ -13,6 +13,8 @@ from flask_app.models import Order, TransactionModel
 
 
 def data_processing(dict_order_data):
+    """Преобразует поля словаря в нужные типы данных,
+    создает объект pydantic."""
     try:
         data = {
             "ID": dict_order_data["ID"],
@@ -39,12 +41,14 @@ def data_processing(dict_order_data):
 
 
 def record_logs(order_data):
+    """Записывает словарь полученныи из json в БД в качестве логов."""
     new_order = Order(data=order_data)
     db.session.add(new_order)
     db.session.commit()
 
 
 def save_to_google(transaction):
+    """Преобразует словарь в датасет и записывает в GBQ."""
     my_gbq = GBQ(secret_path="posbistro-x-klasna-0596bf139c12.json")
     my_gbq.set_project("posbistro-x-klasna")
     df = pd.DataFrame([transaction], columns=transaction.keys())
@@ -55,6 +59,7 @@ def save_to_google(transaction):
 
 
 def validate_field(data):
+    """Проверяет словарь на наличие всех ключей по образцу."""
     errors = []
     for field in RFT:
         if isinstance(field, dict):
@@ -67,12 +72,12 @@ def validate_field(data):
                             errors.append(f"Отсутствует обязательное поле '{nested_field}' в '{key}'.")
         elif field not in data:
             errors.append(f"Отсутствует обязательное поле '{field}'.")
-
     return errors
 
 
 @app.route("/api/order_stream1", methods=["POST"])
 def add_data():
+    """Главная функция, получает request и управляет всей логикой."""
     data = request.get_json()
     order_data = json.dumps(data)
     record_logs(order_data)
