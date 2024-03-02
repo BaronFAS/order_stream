@@ -1,14 +1,14 @@
 ﻿import json
-
-from flask import jsonify, request
-import pandas as pd
-from flask_app import app, db
-from flask_app.models import Order, TransactionModel
-from flask_app.constants import REQUIRED_FIELDS_TRANSACTION
-from flask_app.gbq import GBQ
-
 # from pprint import pprint
 from datetime import datetime
+
+import pandas as pd
+from flask import jsonify, request
+
+from flask_app import app, db
+from flask_app.constants import REQUIRED_FIELDS_TRANSACTION
+from flask_app.gbq import GBQ
+from flask_app.models import Order, TransactionModel
 
 
 def validate_field(data):

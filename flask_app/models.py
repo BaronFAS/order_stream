@@ -1,6 +1,8 @@
-﻿from flask_app import db
-from datetime import datetime as dt
+﻿from datetime import datetime as dt
+
 from pydantic import BaseModel
+
+from flask_app import db
 
 
 class Order(db.Model):

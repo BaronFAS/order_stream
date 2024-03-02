@@ -1,7 +1,8 @@
 ﻿import os
 import warnings
-import pandas_gbq
 from time import strftime
+
+import pandas_gbq
 from google.cloud import bigquery
 
 
