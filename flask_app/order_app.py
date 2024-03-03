@@ -1,6 +1,5 @@
 ﻿import json
 from tqdm import tqdm
-# from pprint import pprint
 
 import pandas as pd
 from flask import jsonify, request
@@ -30,6 +29,7 @@ from flask_app.constants import (
     DF_ERROR,
     INVOICE_PAYMENTS,
 )
+from flask_app.send_message import send_message
 
 
 def record_logs(order_data):
@@ -57,7 +57,7 @@ def add_data():
     validation_errors = validate_field(dict_order_data)
     if validation_errors:
         for error in tqdm(validation_errors):
-            print(VALIDATE_ERROR + error)
+            send_message(VALIDATE_ERROR + error)
             return jsonify({MESSAGE: JSON_ERROR}), 400
     else:
         transaction = data_processing_transaction(dict_order_data)
@@ -69,22 +69,22 @@ def add_data():
 
             result = save_to_google(transaction.dict(), INVOICE)
             if result is False:
-                print(TB_ERROR + INVOICE)
+                send_message(TB_ERROR + INVOICE)
 
             for p in tqdm(products):
                 result = save_to_google(p.dict(), INVOICE_PRODUCTS)
                 if result is False:
-                    print(TB_ERROR + INVOICE_PRODUCTS)
+                    send_message(TB_ERROR + INVOICE_PRODUCTS)
 
             for d in tqdm(discounts):
                 result = save_to_google(d.dict(), INVOICE_DISCOUNTS)
                 if result is False:
-                    print(TB_ERROR + INVOICE_DISCOUNTS)
+                    send_message(TB_ERROR + INVOICE_DISCOUNTS)
 
             for pay in tqdm(payments):
                 result = save_to_google(pay.dict(), INVOICE_PAYMENTS)
                 if result is False:
-                    print(TB_ERROR + INVOICE_PAYMENTS)
+                    send_message(TB_ERROR + INVOICE_PAYMENTS)
 
             return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
 

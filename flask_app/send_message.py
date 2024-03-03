@@ -1,13 +1,9 @@
-﻿def send_message_to_support(message, creds=TGRM_DS_BOT_CREDENTIALS):
-    tgrm_creds = load_credentials(creds)
-    url = (
-        f'https://api.telegram.org/bot{tgrm_creds.get("token")}/sendMessage'
-        f'?chat_id={tgrm_creds.get("chat_id")}&text={message}'
-    )
+﻿from telegram.ext import Updater
 
-    res = requests.get(url=url)
-    if res.status_code != 200:
-        dt = strftime("[%Y-%b-%d %H:%M:%S]")
-        print(f"{dt} Exception: {res.text}")
+from flask_app.constants import CHAT_ID, TELEGRAM_TOKEN
 
-    return True
+
+def send_message(message):
+    updater = Updater(token=TELEGRAM_TOKEN)
+    updater.bot.send_message(chat_id=CHAT_ID, text=message)
+    updater.stop()

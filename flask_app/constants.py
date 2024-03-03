@@ -1,4 +1,18 @@
-﻿SECRET_PATH = "posbistro-x-klasna-0596bf139c12.json"
+﻿import os
+
+from dotenv import load_dotenv
+
+from flask_app import app
+
+load_dotenv()
+
+app.config['FLASK_APP'] = os.getenv('FLASK_APP')
+app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
+
+SECRET_PATH = "posbistro-x-klasna-0596bf139c12.json"
 SET_PROJECT = "posbistro-x-klasna"
 DATASET_NAME = "Manufaktura"
 MESSAGE = "message"

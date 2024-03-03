@@ -13,6 +13,7 @@ from flask_app.constants import (
     INVOICE_DISCOUNTS,
     INVOICE_PAYMENTS,
 )
+from flask_app.send_message import send_message
 
 
 def data_processing_transaction(dict_order_data):
@@ -40,7 +41,7 @@ def data_processing_transaction(dict_order_data):
         transaction = TransactionModel(**data_transaction)
         return transaction
     except Exception as e:
-        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE)
+        send_message(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE)
 
 
 def data_processing_products(dict_order_data):
@@ -70,7 +71,7 @@ def data_processing_products(dict_order_data):
 
         return products
     except Exception as e:
-        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_PRODUCTS)
+        send_message(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_PRODUCTS)
 
 
 def data_processing_discounts(dict_order_data):
@@ -93,7 +94,9 @@ def data_processing_discounts(dict_order_data):
 
         return discounts
     except Exception as e:
-        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_DISCOUNTS)
+        send_message(
+            DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_DISCOUNTS
+        )
 
 
 def data_processing_payments(dict_order_data):
@@ -115,4 +118,4 @@ def data_processing_payments(dict_order_data):
 
         return payments
     except Exception as e:
-        print(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_PAYMENTS)
+        send_message(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_PAYMENTS)
