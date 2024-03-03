@@ -47,6 +47,14 @@ def save_to_google(data, table_name):
     return my_gbq.write_df_to_bgq(df, DATASET_NAME, table_name)
 
 
+def check_data(items, invoce_type, tb_error):
+    result = False
+    for item in tqdm(items):
+        result = save_to_google(item.dict(), invoce_type)
+        if result is False:
+            send_message("{}{}".format(tb_error, invoce_type))
+
+
 @app.route("/api/order_stream", methods=["POST"])
 def add_data():
     """Главная функция, получает request и управляет всей логикой."""
@@ -71,20 +79,24 @@ def add_data():
             if result is False:
                 send_message(TB_ERROR + INVOICE)
 
-            for p in tqdm(products):
-                result = save_to_google(p.dict(), INVOICE_PRODUCTS)
-                if result is False:
-                    send_message(TB_ERROR + INVOICE_PRODUCTS)
+            check_data(products, INVOICE_PRODUCTS, TB_ERROR)
+            check_data(discounts, INVOICE_DISCOUNTS, TB_ERROR)
+            check_data(payments, INVOICE_PAYMENTS, TB_ERROR)
 
-            for d in tqdm(discounts):
-                result = save_to_google(d.dict(), INVOICE_DISCOUNTS)
-                if result is False:
-                    send_message(TB_ERROR + INVOICE_DISCOUNTS)
+            # for p in tqdm(products):
+            #     result = save_to_google(p.dict(), INVOICE_PRODUCTS)
+            #     if result is False:
+            #         send_message(TB_ERROR + INVOICE_PRODUCTS)
 
-            for pay in tqdm(payments):
-                result = save_to_google(pay.dict(), INVOICE_PAYMENTS)
-                if result is False:
-                    send_message(TB_ERROR + INVOICE_PAYMENTS)
+            # for d in tqdm(discounts):
+            #     result = save_to_google(d.dict(), INVOICE_DISCOUNTS)
+            #     if result is False:
+            #         send_message(TB_ERROR + INVOICE_DISCOUNTS)
+
+            # for pay in tqdm(payments):
+            #     result = save_to_google(pay.dict(), INVOICE_PAYMENTS)
+            #     if result is False:
+            #         send_message(TB_ERROR + INVOICE_PAYMENTS)
 
             return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
 
