@@ -48,11 +48,17 @@ def save_to_google(data, table_name):
 
 
 def check_data(items, invoce_type, tb_error):
-    result = False
+    if not isinstance(items, list):
+        result = save_to_google(items.dict(), invoce_type)
+        if result is False:
+            send_message(tb_error + invoce_type)
+            return jsonify({MESSAGE: DF_ERROR}), 400
+    
     for item in tqdm(items):
         result = save_to_google(item.dict(), invoce_type)
         if result is False:
             send_message("{}{}".format(tb_error, invoce_type))
+            return jsonify({MESSAGE: DF_ERROR}), 400
 
 
 @app.route("/api/order_stream", methods=["POST"])
@@ -67,21 +73,25 @@ def add_data():
         for error in tqdm(validation_errors):
             send_message(VALIDATE_ERROR + error)
             return jsonify({MESSAGE: JSON_ERROR}), 400
-    else:
-        transaction = data_processing_transaction(dict_order_data)
-        products = data_processing_products(dict_order_data)
-        discounts = data_processing_discounts(dict_order_data)
-        payments = data_processing_payments(dict_order_data)
+        
+    transaction = data_processing_transaction(dict_order_data)
+    products = data_processing_products(dict_order_data)
+    discounts = data_processing_discounts(dict_order_data)
+    payments = data_processing_payments(dict_order_data)
 
-        if transaction and products and discounts and payments:
-
-            result = save_to_google(transaction.dict(), INVOICE)
-            if result is False:
-                send_message(TB_ERROR + INVOICE)
-
-            check_data(products, INVOICE_PRODUCTS, TB_ERROR)
-            check_data(discounts, INVOICE_DISCOUNTS, TB_ERROR)
-            check_data(payments, INVOICE_PAYMENTS, TB_ERROR)
+    # if transaction and products and discounts and payments:
+    if not all(transaction, products, discounts, payments):
+        return jsonify({MESSAGE: DF_ERROR}), 400
+    
+    # result = save_to_google(transaction.dict(), INVOICE)
+    # if result is False:
+    #     send_message(TB_ERROR + INVOICE)
+    #     return jsonify({MESSAGE: DF_ERROR}), 400
+        
+    check_data(transaction, INVOICE, TB_ERROR)
+    check_data(products, INVOICE_PRODUCTS, TB_ERROR)
+    check_data(discounts, INVOICE_DISCOUNTS, TB_ERROR)
+    check_data(payments, INVOICE_PAYMENTS, TB_ERROR)
 
             # for p in tqdm(products):
             #     result = save_to_google(p.dict(), INVOICE_PRODUCTS)
@@ -98,6 +108,6 @@ def add_data():
             #     if result is False:
             #         send_message(TB_ERROR + INVOICE_PAYMENTS)
 
-            return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
+    return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
 
-        return jsonify({MESSAGE: DF_ERROR}), 400
+    
