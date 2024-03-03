@@ -52,13 +52,14 @@ def check_data(items, invoce_type, tb_error):
         result = save_to_google(items.dict(), invoce_type)
         if result is False:
             send_message(tb_error + invoce_type)
-            return jsonify({MESSAGE: DF_ERROR}), 400
+            return False
     
     for item in tqdm(items):
         result = save_to_google(item.dict(), invoce_type)
         if result is False:
             send_message("{}{}".format(tb_error, invoce_type))
-            return jsonify({MESSAGE: DF_ERROR}), 400
+            return False
+    return True
 
 
 @app.route("/api/order_stream", methods=["POST"])
@@ -88,10 +89,13 @@ def add_data():
     #     send_message(TB_ERROR + INVOICE)
     #     return jsonify({MESSAGE: DF_ERROR}), 400
         
-    check_data(transaction, INVOICE, TB_ERROR)
-    check_data(products, INVOICE_PRODUCTS, TB_ERROR)
-    check_data(discounts, INVOICE_DISCOUNTS, TB_ERROR)
-    check_data(payments, INVOICE_PAYMENTS, TB_ERROR)
+    if not all(
+        check_data(transaction, INVOICE, TB_ERROR),
+        check_data(products, INVOICE_PRODUCTS, TB_ERROR),
+        check_data(discounts, INVOICE_DISCOUNTS, TB_ERROR),
+        check_data(payments, INVOICE_PAYMENTS, TB_ERROR),
+    ):
+        return jsonify({MESSAGE: DF_ERROR}), 400
 
             # for p in tqdm(products):
             #     result = save_to_google(p.dict(), INVOICE_PRODUCTS)
