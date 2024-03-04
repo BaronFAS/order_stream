@@ -20,4 +20,4 @@ RUN flask db migrate
 RUN flask db upgrade
 
 # Запускаем приложение
-CMD ["flask", "run"]
+CMD ["flask", "run", "--host=0.0.0.0"]
