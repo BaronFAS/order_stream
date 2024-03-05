@@ -47,21 +47,6 @@ def save_to_google(data, table_name):
     return my_gbq.write_df_to_bgq(df, DATASET_NAME, table_name)
 
 
-def check_data(items, invoce_type, tb_error):
-    if not isinstance(items, list):
-        result = save_to_google(items.dict(), invoce_type)
-        if result is False:
-            send_message(tb_error + invoce_type)
-            return False
-    
-    for item in tqdm(items):
-        result = save_to_google(item.dict(), invoce_type)
-        if result is False:
-            send_message("{}{}".format(tb_error, invoce_type))
-            return False
-    return True
-
-
 @app.route("/api/order_stream", methods=["POST"])
 def add_data():
     """Главная функция, получает request и управляет всей логикой."""
@@ -74,44 +59,33 @@ def add_data():
         for error in tqdm(validation_errors):
             send_message(VALIDATE_ERROR + error)
             return jsonify({MESSAGE: JSON_ERROR}), 400
-        
-    transaction = data_processing_transaction(dict_order_data)
-    products = data_processing_products(dict_order_data)
-    discounts = data_processing_discounts(dict_order_data)
-    payments = data_processing_payments(dict_order_data)
+    else:
+        transaction = data_processing_transaction(dict_order_data)
+        products = data_processing_products(dict_order_data)
+        discounts = data_processing_discounts(dict_order_data)
+        payments = data_processing_payments(dict_order_data)
 
-    # if transaction and products and discounts and payments:
-    if not all(transaction, products, discounts, payments):
+        if transaction and products and discounts and payments:
+
+            result = save_to_google(transaction.dict(), INVOICE)
+            if result is False:
+                send_message(TB_ERROR + INVOICE)
+
+            for p in tqdm(products):
+                result = save_to_google(p.dict(), INVOICE_PRODUCTS)
+                if result is False:
+                    send_message(TB_ERROR + INVOICE_PRODUCTS)
+
+            for d in tqdm(discounts):
+                result = save_to_google(d.dict(), INVOICE_DISCOUNTS)
+                if result is False:
+                    send_message(TB_ERROR + INVOICE_DISCOUNTS)
+
+            for pay in tqdm(payments):
+                result = save_to_google(pay.dict(), INVOICE_PAYMENTS)
+                if result is False:
+                    send_message(TB_ERROR + INVOICE_PAYMENTS)
+
+            return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
+
         return jsonify({MESSAGE: DF_ERROR}), 400
-    
-    # result = save_to_google(transaction.dict(), INVOICE)
-    # if result is False:
-    #     send_message(TB_ERROR + INVOICE)
-    #     return jsonify({MESSAGE: DF_ERROR}), 400
-        
-    if not all(
-        check_data(transaction, INVOICE, TB_ERROR),
-        check_data(products, INVOICE_PRODUCTS, TB_ERROR),
-        check_data(discounts, INVOICE_DISCOUNTS, TB_ERROR),
-        check_data(payments, INVOICE_PAYMENTS, TB_ERROR),
-    ):
-        return jsonify({MESSAGE: DF_ERROR}), 400
-
-            # for p in tqdm(products):
-            #     result = save_to_google(p.dict(), INVOICE_PRODUCTS)
-            #     if result is False:
-            #         send_message(TB_ERROR + INVOICE_PRODUCTS)
-
-            # for d in tqdm(discounts):
-            #     result = save_to_google(d.dict(), INVOICE_DISCOUNTS)
-            #     if result is False:
-            #         send_message(TB_ERROR + INVOICE_DISCOUNTS)
-
-            # for pay in tqdm(payments):
-            #     result = save_to_google(pay.dict(), INVOICE_PAYMENTS)
-            #     if result is False:
-            #         send_message(TB_ERROR + INVOICE_PAYMENTS)
-
-    return jsonify({MESSAGE: DATA_ADD_SUCCES}), 201
-
-    
