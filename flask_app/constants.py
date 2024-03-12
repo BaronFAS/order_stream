@@ -11,6 +11,9 @@ app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
+USERS = {
+    "test": "hello"
+}
 
 SECRET_PATH = "posbistro-x-klasna-0596bf139c12.json"
 SET_PROJECT = "posbistro-x-klasna"
@@ -26,6 +29,7 @@ TB_ERROR = "Failed to save to table: "
 DATA_ADD_SUCCES = "Data added successfully"
 DF_ERROR = "Error at data field"
 DATA_PROCESSING_ERROR = "Ошибка при обработке данных: "
+
 
 REQUIRED_FIELDS_TRANSACTION = [
     "ID",

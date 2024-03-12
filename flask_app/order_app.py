@@ -2,7 +2,8 @@
 from tqdm import tqdm
 
 import pandas as pd
-from flask import jsonify, request
+from flask import jsonify, request, make_response
+from flask_httpauth import HTTPBasicAuth
 
 from flask_app import app, db
 from flask_app.gbq import GBQ
@@ -28,8 +29,23 @@ from flask_app.constants import (
     DATA_ADD_SUCCES,
     DF_ERROR,
     INVOICE_PAYMENTS,
+    USERS,
 )
 from flask_app.send_message import send_message
+
+
+auth = HTTPBasicAuth()
+
+
+@auth.verify_password
+def verify_password(username, password):
+    if username in USERS and USERS[username] == password:
+        return username
+
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 401)
 
 
 def record_logs(order_data):
@@ -48,6 +64,7 @@ def save_to_google(data, table_name):
 
 
 @app.route("/api/order_stream", methods=["POST"])
+@auth.login_required
 def add_data():
     """Главная функция, получает request и управляет всей логикой."""
     data = request.get_json()
