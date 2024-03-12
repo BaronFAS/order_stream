@@ -1,29 +1,69 @@
 # Order stream"
 
-### Автор:
-- [Михаил Приселков](https://github.com/BaronFAS)
-- [Телеграмм](https://t.me/def_misha_work)
+### Project Description ###
+Allows you to get json with sales data and save it in Google Bin Query. The data is validated against fields and data types and then converted into a dataset for recording. The json received at the endpoint is saved in the database (sqlite) for logging.
 
-### Технологии:
+### Technologies:
 - Python
 - Flask
-- pydantic
-- google-cloud-bigquery
+- Pydantic
+- SQLAlchemy
+- Google Cloud Bigquery
 
-### Описание проекта ###
-Позволяет получить json с данным о продажах и сохранить их в Google Bin Query. Данные валидлируются на соотвествие полям и типам данных после чего преобразуются в датасет для записи. Json с поступивший на эндпоит сохраняется в БД (sqlite) для логирования.
+### Author:
+- [Mikhail Priselkov](https://github.com/BaronFAS)
+- [Telegram](https://t.me/def_misha_work)
 
+### How to run a project on a server: ###
 
-### Как запустить проект:
+**Clone the project from the repository and run the command from the project's root folder.**
 
-Клонировать репозиторий и перейти в него в командной строке:
-
+```bash
+sudo docker compose up --build -d
 ```
-git@github.com:BaronFAS/order_stream.git
+
+### How to run a project locally: ###
+
+**Clone the project from the repository and run the commands from the project's root folder.**
+
+```bash
+# Create a virtual environment
+python -m venv .venv
 ```
 
+```bash
+# Activate the virtual environment
+source .venv/Scripts/activate
+```
 
+```bash
+# Update pip
+python -m pip install --upgrade pip
+```
 
+```bash
+# Install dependencies
+pip install -r requirements.txt
+```
 
+```bash
+# Add the application name to your environment variables
+export FLASK_APP=order_app
+```
 
+```bash
+# Go to folder "flask_app"
+cd flask_app
+```
 
+```bash
+# Create the database and update the tables
+flask db init
+flask db migrate
+flask db upgrade
+```
+
+```bash
+# Run app
+flask run
+```
