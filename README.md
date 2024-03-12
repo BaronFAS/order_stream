@@ -18,6 +18,9 @@ Allows you to get json with sales data and save it in Google Bin Query. The data
 
 **Clone the project from the repository and run the command from the project's root folder.**
 
+**Move the .env and json file with the GBQ password to the root folder**
+*Example .env file in the root folder*
+
 ```bash
 sudo docker compose up --build -d
 ```
