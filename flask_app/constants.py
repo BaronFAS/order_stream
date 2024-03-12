@@ -1,4 +1,5 @@
 ﻿import os
+import json
 
 from dotenv import load_dotenv
 
@@ -11,9 +12,9 @@ app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
-USERS = {
-    "test": "hello"
-}
+
+USERS_JSON = os.getenv('USERS_JSON')
+USERS = json.loads(USERS_JSON)
 
 SECRET_PATH = "posbistro-x-klasna-0596bf139c12.json"
 SET_PROJECT = "posbistro-x-klasna"

@@ -10,6 +10,7 @@ ENV FLASK_APP=order_app
 
 WORKDIR /order_app/flask_app
 
+# Раскомментировать при первом запуске
 RUN flask db init
 RUN flask db migrate
 RUN flask db upgrade
