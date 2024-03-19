@@ -1,4 +1,4 @@
-# Order stream"
+# Order stream #
 
 ### Project Description ###
 Allows you to get json with sales data and save it in Google Bin Query. The data is validated against fields and data types and then converted into a dataset for recording. The json received at the endpoint is saved in the database (sqlite) for logging.
