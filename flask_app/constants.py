@@ -7,13 +7,13 @@ from flask_app import app
 
 load_dotenv()
 
-app.config['FLASK_APP'] = os.getenv('FLASK_APP')
-app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
+app.config["FLASK_APP"] = os.getenv("FLASK_APP")
+app.config["FLASK_ENV"] = os.getenv("FLASK_ENV")
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-USERS_JSON = os.getenv('USERS_JSON')
+USERS_JSON = os.getenv("USERS_JSON")
 USERS = json.loads(USERS_JSON)
 
 SECRET_PATH = "posbistro-x-klasna-0596bf139c12.json"
@@ -30,6 +30,8 @@ TB_ERROR = "Failed to save to table: "
 DATA_ADD_SUCCES = "Data added successfully"
 DF_ERROR = "Error at data field"
 DATA_PROCESSING_ERROR = "Ошибка при обработке данных: "
+EMPTY_JSON = "Пришел пустой json"
+JSON_WITHOUT_FIELD = 'Пришел json без поля или полей "Items", "Discounts", "Payments"'
 
 
 REQUIRED_FIELDS_TRANSACTION = [
@@ -42,7 +44,7 @@ REQUIRED_FIELDS_TRANSACTION = [
     "TransactionNo",
     "TerminalNo",
     "EmployeeNo",
-    "EmployeName",
+    "EmployeeName",
     "Net",
     "Tax",
     "Gross",
@@ -66,4 +68,9 @@ REQUIRED_FIELDS_TRANSACTION = [
         "Discounts": ["AddedOn", "ID", "ItemID", "Name", "Amount"],
         "Payments": ["AddedOn", "ID", "Type", "Amount"],
     },
+    "Barcode",
+    "Client",
+    "LoyaltyCard",
+    "DeliveryAddress",
+    "Invoice",
 ]

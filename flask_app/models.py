@@ -1,6 +1,7 @@
 ﻿from datetime import datetime as dt
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Optional
 
 from flask_app import db
 
@@ -11,7 +12,7 @@ class Order(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=dt.utcnow)
 
 
-class TransactionModel(BaseModel):
+class InvoicesModel(BaseModel):
     ID: str
     StartedOn: str
     FinishedOn: str
@@ -20,14 +21,20 @@ class TransactionModel(BaseModel):
     LocationNo: str
     TransactionNo: str
     TerminalNo: str
-    EmployeeNo: str
-    EmployeName: str
+    EmployeeNo: int
+    EmployeeName: str
     Net: float
     Tax: float
     Gross: float
     Payment: float
     IsRefund: bool
-    created_at: dt
+    Barcode: str
+    Client: Optional[str] = Field(..., nullable=True)
+    LoyaltyCard: Optional[str] = Field(..., nullable=True)
+    DeliveryAddress: Optional[str] = Field(..., nullable=True)
+    Invoice: Optional[str] = Field(..., nullable=True)
+    additional: Optional[str] = Field(..., nullable=True)
+    created_at: str
 
 
 class ProductsModel(BaseModel):
@@ -44,7 +51,8 @@ class ProductsModel(BaseModel):
     TaxRate: float
     Tax: float
     Amount: float
-    created_at: dt
+    additional: Optional[str] = Field(..., nullable=True)
+    created_at: str
 
 
 class DiscountsModel(BaseModel):
@@ -54,7 +62,8 @@ class DiscountsModel(BaseModel):
     ItemID: str
     Name: str
     Amount: float
-    created_at: dt
+    additional: Optional[str] = Field(..., nullable=True)
+    created_at: str
 
 
 class PaymentsModel(BaseModel):
@@ -63,4 +72,5 @@ class PaymentsModel(BaseModel):
     ID: str
     Type: str
     Amount: float
-    created_at: dt
+    additional: Optional[str] = Field(..., nullable=True)
+    created_at: str

@@ -1,8 +1,8 @@
-﻿# import os
+﻿import os
 
 
 class Config(object):
-    # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI')
-    SQLALCHEMY_DATABASE_URI = "sqlite:///db.sqlite3"
+    # DATA_DIR = '../data' if os.name == 'nt' else '/order_app/flask_app/data'
+    DATA_DIR = '../flask_app/data'
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(DATA_DIR, 'db.sqlite3')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # SECRET_KEY = os.getenv('SECRET_KEY')

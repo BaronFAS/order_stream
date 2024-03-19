@@ -1,7 +1,9 @@
-﻿from datetime import datetime
+﻿import pprint
+
+from datetime import datetime
 
 from flask_app.models import (
-    TransactionModel,
+    InvoicesModel,
     ProductsModel,
     DiscountsModel,
     PaymentsModel,
@@ -16,11 +18,11 @@ from flask_app.constants import (
 from flask_app.send_message import send_message
 
 
-def data_processing_transaction(dict_order_data):
+def data_processing_invoices(dict_order_data):
     """Преобразует поля словаря в нужные типы данных,
     создает объект pydantic."""
     try:
-        data_transaction = {
+        data_invoices = {
             "ID": dict_order_data["ID"],
             "StartedOn": dict_order_data["StartedOn"],
             "FinishedOn": dict_order_data["FinishedOn"],
@@ -30,28 +32,40 @@ def data_processing_transaction(dict_order_data):
             "TransactionNo": dict_order_data["TransactionNo"],
             "TerminalNo": dict_order_data["TerminalNo"],
             "EmployeeNo": dict_order_data["EmployeeNo"],
-            "EmployeName": dict_order_data["EmployeName"],
+            "EmployeeName": dict_order_data["EmployeeName"],
             "Net": dict_order_data["Net"],
             "Tax": dict_order_data["Tax"],
             "Gross": dict_order_data["Gross"],
             "Payment": dict_order_data["Payment"],
             "IsRefund": dict_order_data["IsRefund"],
-            "created_at": datetime.now(),
+            "Barcode": dict_order_data["Barcode"],
+            "Client": dict_order_data["Client"],
+            "LoyaltyCard": dict_order_data["LoyaltyCard"],
+            "DeliveryAddress": dict_order_data["DeliveryAddress"],
+            "Invoice": dict_order_data["Invoice"],
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
         }
-        transaction = TransactionModel(**data_transaction)
-        return transaction
+        additional_data = str(
+            {
+                key: value
+                for key, value in dict_order_data.items()
+                if key not in ["Items", "Discounts", "Payments"]
+                and key not in data_invoices
+            }
+        )
+        data_invoices["additional"] = additional_data
+        invoices = InvoicesModel(**data_invoices)
+        return invoices
     except Exception as e:
         send_message(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE)
 
 
 def data_processing_products(dict_order_data):
-    """Преобразует поля словаря в нужные типы данных,
-    создает объект pydantic."""
     try:
         products = []
         data_products = dict_order_data["Items"]
         for data in data_products:
-            data = {
+            new_data = {
                 "invoice_id": dict_order_data["ID"],
                 "AddedOn": data["AddedOn"],
                 "ID": data["ID"],
@@ -65,9 +79,16 @@ def data_processing_products(dict_order_data):
                 "TaxRate": data["TaxRate"],
                 "Tax": data["Tax"],
                 "Amount": data["Amount"],
-                "created_at": datetime.now(),
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
             }
-            products.append(ProductsModel(**data))
+            additional_data = {
+                key: value
+                for key, value in data.items()
+                if key not in ['AddedOn', 'ID', 'SKU', 'PLU', 'EAN', 'Name', 'Category', 'UnitPrice', 'Quantity', 'TaxRate', 'Tax', 'Amount']
+            }
+
+            new_data["additional"] = str(additional_data)
+            products.append(ProductsModel(**new_data))
 
         return products
     except Exception as e:
@@ -80,23 +101,27 @@ def data_processing_discounts(dict_order_data):
     try:
         discounts = []
         data_discounts = dict_order_data["Discounts"]
-        for data in data_discounts:
-            data = {
-                "invoice_id": dict_order_data["ID"],
-                "AddedOn": data["AddedOn"],
-                "ID": data["ID"],
-                "ItemID": data["ItemID"],
-                "Name": data["Name"],
-                "Amount": data["Amount"],
-                "created_at": datetime.now(),
-            }
-            discounts.append(DiscountsModel(**data))
-
+        if data_discounts:
+            for data in data_discounts:
+                new_data = {
+                    "invoice_id": dict_order_data["ID"],
+                    "AddedOn": data["AddedOn"],
+                    "ID": data["ID"],
+                    "ItemID": data["ItemID"],
+                    "Name": data["Name"],
+                    "Amount": data["Amount"],
+                    "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
+                }
+                additional_data = {
+                    key: value
+                    for key, value in data.items()
+                    if key not in ['AddedOn', 'ID', "ItemID", 'Name', 'Amount']
+                }
+                new_data["additional"] = str(additional_data)
+                discounts.append(DiscountsModel(**new_data))
         return discounts
     except Exception as e:
-        send_message(
-            DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_DISCOUNTS
-        )
+        send_message(DATA_PROCESSING_ERROR + str(e) + " в " + INVOICE_DISCOUNTS)
 
 
 def data_processing_payments(dict_order_data):
@@ -106,15 +131,21 @@ def data_processing_payments(dict_order_data):
         payments = []
         data_payments = dict_order_data["Payments"]
         for data in data_payments:
-            data = {
+            new_data = {
                 "invoice_id": dict_order_data["ID"],
                 "AddedOn": data["AddedOn"],
                 "ID": data["ID"],
                 "Type": data["Type"],
                 "Amount": data["Amount"],
-                "created_at": datetime.now(),
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
             }
-            payments.append(PaymentsModel(**data))
+            additional_data = {
+                key: value
+                for key, value in data.items()
+                if key not in ['AddedOn', 'ID', "Type", 'Amount']
+            }
+            new_data["additional"] = str(additional_data)
+            payments.append(PaymentsModel(**new_data))
 
         return payments
     except Exception as e:

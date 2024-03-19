@@ -29,6 +29,15 @@ class GBQ:
         )
         return True
 
+    def insert_rows_to_table(self, data, dataset, table):
+        print(data)
+        table_id = dataset + "." + table
+        errors = self.__client.insert_rows_json(table_id, data)
+        if not len(errors):
+            return True
+        print(errors)
+        return False
+
     def get_table_columns(self, dataset, table):
         table_id = dataset + "." + table
         columns = []
