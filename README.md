@@ -70,3 +70,18 @@ flask db upgrade
 # Run app
 flask run
 ```
+
+### How to access the database with logs ###
+
+```bash
+sqlite3
+```
+
+```bash
+.open db.sqlite3
+```
+
+```bash
+# Example request
+SELECT * FROM "order" LIMIT 10;
+```

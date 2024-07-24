@@ -1,4 +1,4 @@
-﻿import pprint
+﻿import json
 
 from datetime import datetime
 
@@ -42,10 +42,10 @@ def data_processing_invoices(dict_order_data):
             "Client": dict_order_data["Client"],
             "LoyaltyCard": dict_order_data["LoyaltyCard"],
             "DeliveryAddress": dict_order_data["DeliveryAddress"],
-            "Invoice": dict_order_data["Invoice"],
+            "Invoice": json.dumps(dict_order_data["Invoice"]),
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
         }
-        additional_data = str(
+        additional_data = json.dumps(
             {
                 key: value
                 for key, value in dict_order_data.items()

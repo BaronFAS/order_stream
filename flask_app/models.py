@@ -1,15 +1,5 @@
-﻿from datetime import datetime as dt
-
-from pydantic import BaseModel, Field
+﻿from pydantic import BaseModel, Field
 from typing import Optional
-
-from flask_app import db
-
-
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String)
-    timestamp = db.Column(db.DateTime, index=True, default=dt.utcnow)
 
 
 class InvoicesModel(BaseModel):

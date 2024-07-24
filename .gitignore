@@ -22,6 +22,9 @@ var/
 wheels/
 share/python-wheels/
 *.egg-info/
+data
+flask_app/migrations
+.idea
 .installed.cfg
 *.egg
 MANIFEST
@@ -161,3 +164,4 @@ cython_debug/
 
 
 posbistro-x-klasna-0596bf139c12.json
+eco-condition-429319-v2-ed22b29980a1.json
